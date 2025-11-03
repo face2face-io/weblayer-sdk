@@ -1,0 +1,26 @@
+# Source files (only dist is needed)
+src/
+webpack.config.js
+
+# Development files
+node_modules/
+.git/
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+

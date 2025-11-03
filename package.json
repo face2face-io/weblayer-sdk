@@ -1,15 +1,35 @@
 {
   "name": "weblayer-sdk",
-  "version": "1.0.0",
-  "description": "Minimal SDK for WebLayer analytics - sends events to BigQuery",
+  "version": "1.0.1",
+  "description": "This SDK is used to track user behaviour and send it to WebLayer so it can be used as context by coding agents through the WebLayer MCP.",
   "main": "dist/weblayer-sdk.min.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "watch": "webpack --watch --config webpack.config.js"
+    "watch": "webpack --watch --config webpack.config.js",
+    "prepublishOnly": "npm run build"
   },
-  "keywords": ["analytics", "weblayer", "tracking"],
-  "author": "",
+  "keywords": [
+    "analytics",
+    "weblayer",
+    "tracking",
+    "bigquery",
+    "event-tracking",
+    "sdk"
+  ],
+  "author": "Face2Face",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/face2face-io/weblayer-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/face2face-io/weblayer-sdk/issues"
+  },
+  "homepage": "https://github.com/face2face-io/weblayer-sdk#readme",
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
