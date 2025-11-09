@@ -3,14 +3,9 @@ main = "worker.js"
 compatibility_date = "2024-01-01"
 
 # Using KV storage (included with Workers, no setup needed)
-# Steps:
-# 1. Create KV namespace: wrangler kv:namespace create SDK_KV
-# 2. Upload file: wrangler kv:key put --binding=SDK_KV weblayer-sdk.min.js --path=dist/weblayer-sdk.min.js
-# 3. Update the binding IDs below after creating the namespace
-# [[kv_namespaces]]
-# binding = "SDK_KV"
-# id = "your-kv-namespace-id"  # Replace with actual ID from step 1
-# preview_id = "your-preview-kv-namespace-id"  # Replace with preview ID from step 1
+[[kv_namespaces]]
+binding = "SDK_KV"
+id = "fb73e2912ff44a4bb210fd822b0e132b"
 
 # Alternative: Use R2 (requires enabling R2 in Cloudflare Dashboard first)
 # [[r2_buckets]]
@@ -19,10 +14,9 @@ compatibility_date = "2024-01-01"
 
 # Routes configuration (set up in Cloudflare Dashboard after deployment)
 # Pattern: sdk.weblayer.ai/*
-# Or use custom domain in Cloudflare Dashboard
-# routes = [
-#   { pattern = "sdk.weblayer.ai/*", zone_name = "weblayer.ai" }
-# ]
+routes = [
+  { pattern = "sdk.weblayer.ai/*", zone_name = "weblayer.ai" }
+]
 
 # Environment variables (optional - only if you want to override default API URL)
 # Set these in Cloudflare Dashboard → Workers → Settings → Environment Variables
