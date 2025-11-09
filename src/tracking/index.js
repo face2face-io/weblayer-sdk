@@ -299,7 +299,7 @@ export function initWeblayerEmitter(visitorId) {
   if (!origFetch.__weblayerWrapped) {
     window.fetch = async function(input, init) {
     // Prevent infinite recursion if fetch is called within our tracking code
-    if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].includes('/qwerty/events')) {
+    if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].includes('/sdk/events')) {
       return origFetch.apply(this, arguments);
     }
     
@@ -366,7 +366,7 @@ export function initWeblayerEmitter(visitorId) {
     this._weblayerMethod = method;
     this._weblayerUrl = url;
     // Prevent tracking our own requests
-    this._weblayerSkip = typeof url === 'string' && url.includes('/qwerty/events');
+    this._weblayerSkip = typeof url === 'string' && url.includes('/sdk/events');
     return origOpen.apply(this, arguments);
   };
   
