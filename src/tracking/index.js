@@ -28,7 +28,7 @@ async function flush() {
   timer = null;
   try {
     // Use the ORIGINAL fetch to avoid infinite recursion
-    await origFetchForFlush(`${config.apiUrl}/qwerty/events`, {
+    await origFetchForFlush(`${config.apiUrl}/sdk/events`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ events: batch })
