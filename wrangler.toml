@@ -30,3 +30,9 @@ compatibility_date = "2024-01-01"
 # [vars]
 # API_URL = "https://api.weblayer.ai"  # Optional: defaults to https://api.weblayer.ai
 
+[observability]
+[observability.logs]
+enabled = false
+head_sampling_rate = 1
+invocation_logs = true
+persist = true
