@@ -7,10 +7,10 @@ compatibility_date = "2024-01-01"
 # 1. Create KV namespace: wrangler kv:namespace create SDK_KV
 # 2. Upload file: wrangler kv:key put --binding=SDK_KV weblayer-sdk.min.js --path=dist/weblayer-sdk.min.js
 # 3. Update the binding IDs below after creating the namespace
-[[kv_namespaces]]
-binding = "SDK_KV"
-id = "your-kv-namespace-id"  # Replace with actual ID from step 1
-preview_id = "your-preview-kv-namespace-id"  # Replace with preview ID from step 1
+# [[kv_namespaces]]
+# binding = "SDK_KV"
+# id = "your-kv-namespace-id"  # Replace with actual ID from step 1
+# preview_id = "your-preview-kv-namespace-id"  # Replace with preview ID from step 1
 
 # Alternative: Use R2 (requires enabling R2 in Cloudflare Dashboard first)
 # [[r2_buckets]]
