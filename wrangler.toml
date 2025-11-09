@@ -1,0 +1,30 @@
+name = "weblayer-sdk"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# For production, use R2 to store the SDK file (recommended)
+# Steps:
+# 1. Create R2 bucket: wrangler r2 bucket create weblayer-sdk
+# 2. Upload file: wrangler r2 object put weblayer-sdk/weblayer-sdk.min.js --file=dist/weblayer-sdk.min.js
+# 3. Uncomment and update the binding below:
+# [[r2_buckets]]
+# binding = "SDK_BUCKET"
+# bucket_name = "weblayer-sdk"
+
+# Alternative: Use KV storage (smaller files, < 25MB)
+# Steps:
+# 1. Create KV namespace: wrangler kv:namespace create SDK_KV
+# 2. Upload file: wrangler kv:key put --binding=SDK_KV weblayer-sdk.min.js --path=dist/weblayer-sdk.min.js
+# 3. Uncomment and update the binding below:
+# [kv_namespaces]
+# binding = "SDK_KV"
+# id = "your-kv-namespace-id"
+# preview_id = "your-preview-kv-namespace-id"
+
+# Routes configuration (set up in Cloudflare Dashboard after deployment)
+# Pattern: sdk.weblayer.ai/*
+# Or use custom domain in Cloudflare Dashboard
+# routes = [
+#   { pattern = "sdk.weblayer.ai/*", zone_name = "weblayer.ai" }
+# ]
+
