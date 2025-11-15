@@ -72,6 +72,18 @@ if (typeof window !== 'undefined') {
 }
 
 class WebLayerSDK {
+  /**
+   * Convenience method: alias for WEBLAYERSDK.acb()
+   * @param {string} prompt - Natural language instruction
+   * @param {string} mode - Execution mode ('act' or 'guide')
+   */
+  static act(prompt, mode = 'act') {
+    if (typeof window !== 'undefined' && window.WEBLAYERSDK && window.WEBLAYERSDK.acb) {
+      return window.WEBLAYERSDK.acb(prompt, mode);
+    }
+    throw new Error('WEBLAYERSDK not available. Make sure the SDK is loaded and WebLayerSDK.init() has been called.');
+  }
+
   static init(orgId, options = {}) {
     if (!orgId) {
       console.error('[weblayer] orgId is required');
