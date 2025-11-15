@@ -26,6 +26,15 @@ export class ACBController {
     }
 
     /**
+     * Update orgId (called when init() is called with new orgId)
+     */
+    updateOrgId(orgId) {
+        this.config.orgId = orgId;
+        // Recreate LLM client with new orgId
+        this.llmClient = new LLMClient(this.config.apiUrl, orgId);
+    }
+
+    /**
      * Start ACB automation session
      * @param {string} prompt - Natural language instruction
      * @param {string} mode - Execution mode ('act' or 'guide')

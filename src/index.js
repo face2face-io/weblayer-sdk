@@ -3,6 +3,74 @@ import { getOrCreateVisitorId } from './visitor.js';
 import { initWeblayerEmitter } from './tracking/index.js';
 import { ACBController } from './acb/index.js';
 
+// Global ACB controller instance (created immediately)
+let acbControllerInstance = null;
+
+// Initialize ACB controller immediately (will use config.org_id when set)
+function initializeACB() {
+  if (!acbControllerInstance) {
+    try {
+      acbControllerInstance = new ACBController({
+        apiUrl: config.apiUrl || 'https://api.weblayer.ai',
+        orgId: config.org_id,
+        debug: config.debug || false
+      });
+    } catch (e) {
+      console.error('[weblayer] Failed to initialize ACB controller:', e);
+    }
+  }
+  return acbControllerInstance;
+}
+
+// Expose ACB methods on window.WEBLAYERSDK immediately
+if (typeof window !== 'undefined') {
+  window.WEBLAYERSDK = window.WEBLAYERSDK || {};
+  
+  // Initialize ACB controller
+  initializeACB();
+  
+  // Expose methods immediately (they'll use the controller instance)
+  window.WEBLAYERSDK.acb = async (prompt, mode = 'act') => {
+    const controller = initializeACB();
+    if (!controller) {
+      throw new Error('ACB not available. Make sure WebLayerSDK.init() has been called with an orgId.');
+    }
+    return await controller.acb(prompt, mode);
+  };
+
+  window.WEBLAYERSDK.acbStop = async () => {
+    const controller = initializeACB();
+    if (!controller) {
+      throw new Error('ACB not available. Make sure WebLayerSDK.init() has been called with an orgId.');
+    }
+    return await controller.acbStop();
+  };
+
+  window.WEBLAYERSDK.acbPause = async () => {
+    const controller = initializeACB();
+    if (!controller) {
+      throw new Error('ACB not available. Make sure WebLayerSDK.init() has been called with an orgId.');
+    }
+    return await controller.acbPause();
+  };
+
+  window.WEBLAYERSDK.acbResume = async () => {
+    const controller = initializeACB();
+    if (!controller) {
+      throw new Error('ACB not available. Make sure WebLayerSDK.init() has been called with an orgId.');
+    }
+    return await controller.acbResume();
+  };
+
+  window.WEBLAYERSDK.acbStatus = () => {
+    const controller = initializeACB();
+    if (!controller) {
+      return { running: false, error: 'ACB not available' };
+    }
+    return controller.getStatus();
+  };
+}
+
 class WebLayerSDK {
   static init(orgId, options = {}) {
     if (!orgId) {
@@ -40,42 +108,19 @@ class WebLayerSDK {
       console.error('[weblayer] Failed to initialize tracking:', e);
     }
 
-    // Initialize ACB module
-    try {
-      const acbController = new ACBController({
-        apiUrl: config.apiUrl,
-        orgId: config.org_id,
-        debug: config.debug
-      });
-
-      // Expose ACB methods on window.WEBLAYERSDK
-      if (typeof window !== 'undefined') {
-        if (!window.WEBLAYERSDK) {
-          window.WEBLAYERSDK = {};
+    // Update ACB controller with new orgId (if controller exists)
+    if (typeof window !== 'undefined' && acbControllerInstance) {
+      try {
+        acbControllerInstance.updateOrgId(config.org_id);
+        acbControllerInstance.config.apiUrl = config.apiUrl;
+        acbControllerInstance.config.debug = config.debug;
+        
+        if (config.debug) {
+          console.log('[weblayer] ACB module updated with orgId:', config.org_id);
         }
-
-        window.WEBLAYERSDK.acb = async (prompt, mode = 'act') => {
-          return await acbController.acb(prompt, mode);
-        };
-
-        window.WEBLAYERSDK.acbStop = async () => {
-          return await acbController.acbStop();
-        };
-
-        window.WEBLAYERSDK.acbPause = async () => {
-          return await acbController.acbPause();
-        };
-
-        window.WEBLAYERSDK.acbResume = async () => {
-          return await acbController.acbResume();
-        };
-
-        window.WEBLAYERSDK.acbStatus = () => {
-          return acbController.getStatus();
-        };
+      } catch (e) {
+        console.error('[weblayer] Failed to update ACB controller:', e);
       }
-    } catch (e) {
-      console.error('[weblayer] Failed to initialize ACB:', e);
     }
   }
 }
