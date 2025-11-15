@@ -1,6 +1,7 @@
 import config from './config.js';
 import { getOrCreateVisitorId } from './visitor.js';
 import { initWeblayerEmitter } from './tracking/index.js';
+import { ACBController } from './acb/index.js';
 
 class WebLayerSDK {
   static init(orgId, options = {}) {
@@ -37,6 +38,44 @@ class WebLayerSDK {
       initWeblayerEmitter(visitorId);
     } catch (e) {
       console.error('[weblayer] Failed to initialize tracking:', e);
+    }
+
+    // Initialize ACB module
+    try {
+      const acbController = new ACBController({
+        apiUrl: config.apiUrl,
+        orgId: config.org_id,
+        debug: config.debug
+      });
+
+      // Expose ACB methods on window.WEBLAYERSDK
+      if (typeof window !== 'undefined') {
+        if (!window.WEBLAYERSDK) {
+          window.WEBLAYERSDK = {};
+        }
+
+        window.WEBLAYERSDK.acb = async (prompt, mode = 'act') => {
+          return await acbController.acb(prompt, mode);
+        };
+
+        window.WEBLAYERSDK.acbStop = async () => {
+          return await acbController.acbStop();
+        };
+
+        window.WEBLAYERSDK.acbPause = async () => {
+          return await acbController.acbPause();
+        };
+
+        window.WEBLAYERSDK.acbResume = async () => {
+          return await acbController.acbResume();
+        };
+
+        window.WEBLAYERSDK.acbStatus = () => {
+          return acbController.getStatus();
+        };
+      }
+    } catch (e) {
+      console.error('[weblayer] Failed to initialize ACB:', e);
     }
   }
 }
