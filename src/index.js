@@ -147,16 +147,19 @@ class WebLayerSDK {
 if (typeof window !== 'undefined') {
   window.WebLayerSDK = WebLayerSDK;
   
-  // Expose act method on WebLayerSDK class (static method)
+  // Expose act method on WebLayerSDK class immediately
   // This ensures it's available even before init() is called
-  if (!WebLayerSDK.act) {
-    WebLayerSDK.act = function(prompt, mode = 'act') {
-      if (window.WEBLAYERSDK && window.WEBLAYERSDK.acb) {
-        return window.WEBLAYERSDK.acb(prompt, mode);
-      }
-      throw new Error('WEBLAYERSDK not available. Make sure the SDK is loaded and WebLayerSDK.init() has been called.');
-    };
-  }
+  WebLayerSDK.act = function(prompt, mode = 'act') {
+    if (window.WEBLAYERSDK && window.WEBLAYERSDK.acb) {
+      return window.WEBLAYERSDK.acb(prompt, mode);
+    }
+    throw new Error('WEBLAYERSDK not available. Make sure the SDK is loaded and WebLayerSDK.init() has been called.');
+  };
+  
+  // Also expose on window for easier access
+  window.act = function(prompt, mode = 'act') {
+    return WebLayerSDK.act(prompt, mode);
+  };
 
   // Auto-initialize if org_id is present in the script URL path
   (function() {
@@ -188,6 +191,7 @@ if (typeof window !== 'undefined') {
         // If path has parts and it's not just the root, use the last part as org_id
         if (pathParts.length > 0 && scriptUrl.hostname.includes('sdk.weblayer.ai')) {
           orgId = pathParts[pathParts.length - 1];
+          console.log('[weblayer] Auto-detected org_id from URL:', orgId);
         }
       } catch (e) {
         // Fallback: simple string parsing if URL constructor fails
@@ -196,6 +200,7 @@ if (typeof window !== 'undefined') {
           const match = src.match(/sdk\.weblayer\.ai\/([^\/\?#]+)/);
           if (match && match[1]) {
             orgId = match[1];
+            console.log('[weblayer] Auto-detected org_id from URL (fallback):', orgId);
           }
         }
       }
@@ -207,6 +212,7 @@ if (typeof window !== 'undefined') {
 
       // Auto-initialize if org_id found
       if (orgId) {
+        console.log('[weblayer] Auto-initializing with org_id:', orgId);
         // Initialize immediately if DOM is ready, otherwise wait
         if (document.readyState === 'loading') {
           document.addEventListener('DOMContentLoaded', function() {
@@ -215,6 +221,8 @@ if (typeof window !== 'undefined') {
         } else {
           WebLayerSDK.init(orgId);
         }
+      } else {
+        console.log('[weblayer] No org_id found in script URL. Call WebLayerSDK.init(orgId) manually.');
       }
     }
   })();
