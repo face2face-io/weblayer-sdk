@@ -127,12 +127,18 @@ class WebLayerSDK {
         acbControllerInstance.config.apiUrl = config.apiUrl;
         acbControllerInstance.config.debug = config.debug;
         
+        // Log initialization similar to f2f SDK
+        console.log('[weblayer] WebLayer SDK initialized with org_id:', config.org_id);
+        
         if (config.debug) {
           console.log('[weblayer] ACB module updated with orgId:', config.org_id);
         }
       } catch (e) {
         console.error('[weblayer] Failed to update ACB controller:', e);
       }
+    } else if (typeof window !== 'undefined') {
+      // Log even if controller doesn't exist yet
+      console.log('[weblayer] WebLayer SDK initialized with org_id:', config.org_id);
     }
   }
 }
@@ -140,6 +146,17 @@ class WebLayerSDK {
 // Export for browser
 if (typeof window !== 'undefined') {
   window.WebLayerSDK = WebLayerSDK;
+  
+  // Expose act method on WebLayerSDK class (static method)
+  // This ensures it's available even before init() is called
+  if (!WebLayerSDK.act) {
+    WebLayerSDK.act = function(prompt, mode = 'act') {
+      if (window.WEBLAYERSDK && window.WEBLAYERSDK.acb) {
+        return window.WEBLAYERSDK.acb(prompt, mode);
+      }
+      throw new Error('WEBLAYERSDK not available. Make sure the SDK is loaded and WebLayerSDK.init() has been called.');
+    };
+  }
 
   // Auto-initialize if org_id is present in the script URL path
   (function() {
