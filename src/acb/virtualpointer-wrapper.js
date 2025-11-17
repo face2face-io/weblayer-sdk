@@ -33,10 +33,10 @@ export function clickElement(element) {
                 // - default_click_duration: ~20-250ms (random)
                 // - mouseover: +10ms, mousemove: +20ms, mousedown: +20ms, mouseup: +duration*2, click: +10ms
                 // Total: ~50 + 20 + 10 + 20 + 20 + (20-250)*2 + 10 = ~150-600ms
-                // Add buffer for scroll and animation: ~1000ms should be safe
+                // Reduced from 1000ms to 400ms for faster execution (still safe for animations)
                 setTimeout(() => {
                     resolve({ success: true });
-                }, 1000);
+                }, 400);
             } else {
                 reject(new Error('VirtualPointer not available'));
             }

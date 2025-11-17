@@ -24,23 +24,50 @@ var virtualpointer = function() {
     function init_visual_cursor() {
         if (cursor_element) return; // already initialized
 
-        // create cursor element
+        // create cursor container with label
+        var cursor_container = document.createElement('div');
+        cursor_container.id = 'virtualpointer-container';
+        cursor_container.style.cssText = 
+            'position: fixed;' +
+            'pointer-events: none;' +
+            'z-index: 999999;' +
+            'transform: translate(-50%, -50%);';
+
+        // create cursor element (blue)
         cursor_element = document.createElement('div');
         cursor_element.id = 'virtualpointer-cursor';
         cursor_element.style.cssText = 
-            'position: fixed;' +
             'width: 20px;' +
             'height: 20px;' +
             'border-radius: 50%;' +
-            'background: rgba(255, 0, 0, 0.6);' +
-            'border: 2px solid rgba(255, 255, 255, 0.9);' +
+            'background: rgba(59, 130, 246, 0.7);' +
+            'border: 2px solid rgba(255, 255, 255, 0.95);' +
             'pointer-events: none;' +
-            'z-index: 999999;' +
             'transition: all 0.1s ease-out;' +
-            'box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);' +
-            'transform: translate(-50%, -50%);';
+            'box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);' +
+            'position: relative;';
 
-        // create ripple element for clicks
+        // create label element
+        var label_element = document.createElement('div');
+        label_element.id = 'virtualpointer-label';
+        label_element.textContent = 'AI';
+        label_element.style.cssText = 
+            'position: absolute;' +
+            'top: -35px;' +
+            'left: 50%;' +
+            'transform: translateX(-50%);' +
+            'background: rgba(59, 130, 246, 0.95);' +
+            'color: white;' +
+            'padding: 4px 10px;' +
+            'border-radius: 12px;' +
+            'font-size: 11px;' +
+            'font-weight: 600;' +
+            'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;' +
+            'white-space: nowrap;' +
+            'box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);' +
+            'letter-spacing: 0.5px;';
+
+        // create ripple element for clicks (blue)
         ripple_element = document.createElement('div');
         ripple_element.id = 'virtualpointer-ripple';
         ripple_element.style.cssText = 
@@ -48,15 +75,22 @@ var virtualpointer = function() {
             'width: 10px;' +
             'height: 10px;' +
             'border-radius: 50%;' +
-            'background: rgba(255, 0, 0, 0.4);' +
-            'border: 2px solid rgba(255, 0, 0, 0.6);' +
+            'background: rgba(59, 130, 246, 0.4);' +
+            'border: 2px solid rgba(59, 130, 246, 0.6);' +
             'pointer-events: none;' +
             'z-index: 999998;' +
             'transform: translate(-50%, -50%) scale(0);' +
             'opacity: 0;';
 
-        document.body.appendChild(cursor_element);
+        // assemble cursor with label
+        cursor_element.appendChild(label_element);
+        cursor_container.appendChild(cursor_element);
+        
+        document.body.appendChild(cursor_container);
         document.body.appendChild(ripple_element);
+        
+        // update reference to container for positioning
+        cursor_element = cursor_container;
     }
 
     // update visual cursor position
@@ -112,10 +146,12 @@ var virtualpointer = function() {
 
     // remove visual cursor
     function remove_visual_cursor() {
+        // Remove container (which includes cursor and label)
         if (cursor_element && cursor_element.parentNode) {
             cursor_element.parentNode.removeChild(cursor_element);
             cursor_element = null;
         }
+        // Remove ripple element
         if (ripple_element && ripple_element.parentNode) {
             ripple_element.parentNode.removeChild(ripple_element);
             ripple_element = null;

@@ -63,14 +63,14 @@ export class ActionExecutor {
         // Scroll into view first
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
         
-        // Wait for scroll
-        await new Promise(resolve => setTimeout(resolve, 300));
+        // Wait for scroll (reduced from 300ms to 150ms)
+        await new Promise(resolve => setTimeout(resolve, 150));
 
         // Click using virtualpointer
         await clickElement(element);
 
-        // Wait for any DOM changes triggered by the click
-        await this._waitForDOMChanges(500);
+        // Wait for any DOM changes triggered by the click (reduced from 500ms to 250ms)
+        await this._waitForDOMChanges(250);
 
         return {
             success: true,
@@ -100,7 +100,7 @@ export class ActionExecutor {
 
         // Scroll into view
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, 150));
 
         // Focus element
         element.focus();
@@ -136,16 +136,16 @@ export class ActionExecutor {
             });
             element.dispatchEvent(keyupEvent);
 
-            // Small delay between characters
-            await new Promise(resolve => setTimeout(resolve, 50));
+            // Small delay between characters (reduced from 50ms to 20ms)
+            await new Promise(resolve => setTimeout(resolve, 20));
         }
 
         // Final change event
         const changeEvent = new Event('change', { bubbles: true });
         element.dispatchEvent(changeEvent);
 
-        // Wait for any DOM changes triggered by the input
-        await this._waitForDOMChanges(300);
+        // Wait for any DOM changes triggered by the input (reduced from 300ms to 150ms)
+        await this._waitForDOMChanges(150);
 
         return {
             success: true,
@@ -192,7 +192,7 @@ export class ActionExecutor {
      * Wait for DOM changes to settle
      * @private
      */
-    async _waitForDOMChanges(maxWait = 500) {
+    async _waitForDOMChanges(maxWait = 250) {
         return new Promise((resolve) => {
             let timeout;
             const observer = new MutationObserver((mutations) => {
@@ -215,7 +215,7 @@ export class ActionExecutor {
                 attributes: true
             });
 
-            // Maximum wait time
+            // Maximum wait time (default reduced from 500ms to 250ms)
             setTimeout(() => {
                 if (timeout) {
                     clearTimeout(timeout);
@@ -236,7 +236,7 @@ export class ActionExecutor {
             const element = this.elementDiscovery.findElementById(action.targetId);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 250));
                 return {
                     success: true,
                     action: action,
@@ -250,7 +250,7 @@ export class ActionExecutor {
 
         // Default: scroll down
         window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' });
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 250));
 
         return {
             success: true,
@@ -312,12 +312,12 @@ export class ActionExecutor {
         // Modern frameworks (React, Vue, etc.) handle form submission via event handlers
         // Don't call form.submit() directly as it bypasses preventDefault and causes page reloads
         if (key === 'Enter' && (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA')) {
-            // Give React/framework handlers time to execute
-            await new Promise(resolve => setTimeout(resolve, 100));
+            // Give React/framework handlers time to execute (reduced from 100ms to 50ms)
+            await new Promise(resolve => setTimeout(resolve, 50));
         }
 
-        // Wait for any DOM changes triggered by the key press
-        await this._waitForDOMChanges(300);
+        // Wait for any DOM changes triggered by the key press (reduced from 300ms to 150ms)
+        await this._waitForDOMChanges(150);
 
         return {
             success: true,
