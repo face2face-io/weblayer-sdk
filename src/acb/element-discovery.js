@@ -45,15 +45,13 @@ export class ElementDiscovery {
             '[tabindex]:not([tabindex="-1"])'
         ];
 
-        // Get all matching elements
+        // Get all matching elements (including hidden ones)
         const allElements = new Set();
         selectors.forEach(selector => {
             try {
                 document.querySelectorAll(selector).forEach(el => {
-                    // Skip hidden elements
-                    if (this._isElementVisible(el)) {
-                        allElements.add(el);
-                    }
+                    // Include all elements, we'll mark visibility in metadata
+                    allElements.add(el);
                 });
             } catch (e) {
                 // Invalid selector, skip
@@ -81,10 +79,9 @@ export class ElementDiscovery {
      */
     _extractElementData(element) {
         try {
-            // Skip if element is not in viewport or not visible
-            if (!this._isElementVisible(element)) {
-                return null;
-            }
+            // Check visibility (but don't skip hidden elements)
+            const isVisible = this._isElementVisible(element);
+            const isDisabled = element.disabled || element.getAttribute('aria-disabled') === 'true';
 
             // Get element position
             const rect = element.getBoundingClientRect();
@@ -144,7 +141,10 @@ export class ElementDiscovery {
                 placeholder: placeholder,
                 ariaLabel: ariaLabel,
                 role: role,
-                visible: isInViewport,
+                visible: isVisible && isInViewport,
+                hidden: !isVisible,
+                disabled: isDisabled,
+                inViewport: isInViewport,
                 position: {
                     top: Math.round(rect.top),
                     left: Math.round(rect.left),
