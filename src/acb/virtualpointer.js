@@ -31,41 +31,45 @@ var virtualpointer = function() {
             'position: fixed;' +
             'pointer-events: none;' +
             'z-index: 999999;' +
-            'transform: translate(-50%, -50%);';
+            'display: flex;' +
+            'align-items: flex-start;' +
+            'gap: 8px;';
 
-        // create cursor element (blue)
-        cursor_element = document.createElement('div');
-        cursor_element.id = 'virtualpointer-cursor';
-        cursor_element.style.cssText = 
-            'width: 20px;' +
-            'height: 20px;' +
-            'border-radius: 50%;' +
-            'background: rgba(59, 130, 246, 0.7);' +
-            'border: 2px solid rgba(255, 255, 255, 0.95);' +
-            'pointer-events: none;' +
-            'transition: all 0.1s ease-out;' +
-            'box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);' +
-            'position: relative;';
+        // create SVG cursor element (triangular Figma-style pointer)
+        var cursor_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        cursor_svg.setAttribute('width', '24');
+        cursor_svg.setAttribute('height', '24');
+        cursor_svg.setAttribute('viewBox', '0 0 24 24');
+        cursor_svg.style.cssText = 
+            'filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));' +
+            'transition: all 0.1s ease-out;';
+
+        // create the triangular cursor path
+        var cursor_path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        cursor_path.setAttribute('d', 'M5.5 3L20.5 18L12 15.5L9.5 22L5.5 3Z');
+        cursor_path.setAttribute('fill', '#3b82f6');
+        cursor_path.setAttribute('stroke', 'white');
+        cursor_path.setAttribute('stroke-width', '1.5');
+        cursor_path.setAttribute('stroke-linejoin', 'round');
+        
+        cursor_svg.appendChild(cursor_path);
 
         // create label element
         var label_element = document.createElement('div');
         label_element.id = 'virtualpointer-label';
         label_element.textContent = 'AI';
         label_element.style.cssText = 
-            'position: absolute;' +
-            'top: -35px;' +
-            'left: 50%;' +
-            'transform: translateX(-50%);' +
-            'background: rgba(59, 130, 246, 0.95);' +
+            'background: #3b82f6;' +
             'color: white;' +
             'padding: 4px 10px;' +
             'border-radius: 12px;' +
-            'font-size: 11px;' +
+            'font-size: 12px;' +
             'font-weight: 600;' +
             'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;' +
             'white-space: nowrap;' +
-            'box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);' +
-            'letter-spacing: 0.5px;';
+            'box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);' +
+            'letter-spacing: 0.3px;' +
+            'margin-top: 2px;';
 
         // create ripple element for clicks (blue)
         ripple_element = document.createElement('div');
@@ -83,8 +87,8 @@ var virtualpointer = function() {
             'opacity: 0;';
 
         // assemble cursor with label
-        cursor_element.appendChild(label_element);
-        cursor_container.appendChild(cursor_element);
+        cursor_container.appendChild(cursor_svg);
+        cursor_container.appendChild(label_element);
         
         document.body.appendChild(cursor_container);
         document.body.appendChild(ripple_element);
@@ -100,6 +104,7 @@ var virtualpointer = function() {
         // if element is provided, use its precise viewport position
         if (element) {
             var rect = element.getBoundingClientRect();
+            // Position cursor pointer at center of element
             var centerX = rect.left + (rect.width / 2);
             var centerY = rect.top + (rect.height / 2);
             cursor_element.style.left = centerX + 'px';
