@@ -297,6 +297,18 @@ export class ACBController {
 
             // Check for errors in action
             if (action.error) {
+                // Display detailed error information
+                console.error('[ACB] ❌ Action failed:', action.error);
+                
+                if (action.error_type === 'claude_api_error') {
+                    console.error('[ACB] Error type: Claude API Error');
+                    console.error('[ACB] Retryable:', action.retryable ? 'Yes' : 'No');
+                    if (action.retry_attempts) {
+                        console.error(`[ACB] Failed after ${action.retry_attempts} retry attempts`);
+                    }
+                    console.error('[ACB] This is likely a temporary issue with Claude\'s servers. Please try again in a moment.');
+                }
+                
                 throw new Error(`Action error: ${action.error}`);
             }
 
