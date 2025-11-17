@@ -104,21 +104,6 @@ class WebLayerSDK {
   }
 }
 
-// Add DOMContentLoaded listener as primary initialization method
-document.addEventListener("DOMContentLoaded", () => {
-  initializeSDK();
-});
-
-// Fallback initialization
-window.addEventListener("load", () => {
-  initializeSDK();
-});
-
-const INIT_TIMEOUT = 5000; // 5 seconds
-setTimeout(() => {
-  initializeSDK();
-}, INIT_TIMEOUT);
-
 // Helper function to handle initialization (F2F-style)
 function initializeSDK() {
   if (!window._weblayerInitialized) {
@@ -167,7 +152,7 @@ function initializeSDK() {
 }
 
 if (typeof window !== 'undefined') {
-  // Expose WebLayerSDK on window (like F2F does)
+  // Expose WebLayerSDK on window FIRST (like F2F does)
   window.WebLayerSDK = WebLayerSDK;
 
   // Initialize WEBLAYERSDK namespace for ACB methods
@@ -228,6 +213,19 @@ if (typeof window !== 'undefined') {
   };
 }
 
-export default WebLayerSDK;
+// Add DOMContentLoaded listener as primary initialization method
+document.addEventListener("DOMContentLoaded", () => {
+  initializeSDK();
+});
+
+// Fallback initialization
+window.addEventListener("load", () => {
+  initializeSDK();
+});
+
+const INIT_TIMEOUT = 5000; // 5 seconds
+setTimeout(() => {
+  initializeSDK();
+}, INIT_TIMEOUT);
 
 
