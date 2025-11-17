@@ -3,11 +3,21 @@
  * Provides visual feedback (cursor, ripple effects) for ACB actions
  */
 
-import { showCursor, hideCursor } from './virtualpointer-wrapper.js';
+import { showCursor, hideCursor, updateCursorLabel } from './virtualpointer-wrapper.js';
 
 export class VisualFeedback {
     constructor() {
         this.isVisible = false;
+    }
+
+    /**
+     * Show cursor (without setting state)
+     */
+    showCursor() {
+        if (!this.isVisible) {
+            showCursor();
+            this.isVisible = true;
+        }
     }
 
     /**
@@ -16,10 +26,11 @@ export class VisualFeedback {
      * @returns {Promise} Resolves when feedback is shown
      */
     async showAction(action) {
-        if (!this.isVisible) {
-            showCursor();
-            this.isVisible = true;
-        }
+        // Ensure cursor is visible
+        this.showCursor();
+
+        // Set "acting..." state when executing action
+        this.setStateActing();
 
         // Visual feedback is handled by virtualpointer's click_element
         // which shows cursor movement and ripple effects
@@ -52,12 +63,42 @@ export class VisualFeedback {
      */
     hide() {
         if (this.isVisible) {
+            // Reset to idle state before hiding
+            this.setStateIdle();
             hideCursor();
             this.isVisible = false;
         }
 
         // Remove any highlights
         this._removeHighlights();
+    }
+
+    /**
+     * Set cursor state to "loading..."
+     */
+    setStateLoading() {
+        updateCursorLabel('loading...');
+    }
+
+    /**
+     * Set cursor state to "thinking..."
+     */
+    setStateThinking() {
+        updateCursorLabel('thinking...');
+    }
+
+    /**
+     * Set cursor state to "acting..."
+     */
+    setStateActing() {
+        updateCursorLabel('acting...');
+    }
+
+    /**
+     * Set cursor state to "AI" (idle)
+     */
+    setStateIdle() {
+        updateCursorLabel('AI');
     }
 
     /**

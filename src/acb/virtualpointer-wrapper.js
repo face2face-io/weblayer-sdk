@@ -64,3 +64,13 @@ export function hideCursor() {
     }
 }
 
+/**
+ * Update cursor label text
+ * @param {string} text - Label text to display
+ */
+export function updateCursorLabel(text) {
+    if (virtualpointerInstance && virtualpointerInstance.updateLabel) {
+        virtualpointerInstance.updateLabel(text);
+    }
+}
+

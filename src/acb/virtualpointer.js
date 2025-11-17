@@ -18,7 +18,8 @@ var virtualpointer = function() {
         default_screen_y_offset = 30,
         show_visual_cursor      = true,
         cursor_element          = null,
-        ripple_element          = null;
+        ripple_element          = null,
+        label_element           = null;
 
     // initialize visual cursor
     function init_visual_cursor() {
@@ -35,41 +36,44 @@ var virtualpointer = function() {
             'align-items: flex-start;' +
             'gap: 8px;';
 
-        // create SVG cursor element (triangular Figma-style pointer)
+        // create SVG cursor element (triangular Figma-style pointer - bigger and smoother)
         var cursor_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        cursor_svg.setAttribute('width', '24');
-        cursor_svg.setAttribute('height', '24');
+        cursor_svg.setAttribute('width', '36');
+        cursor_svg.setAttribute('height', '36');
         cursor_svg.setAttribute('viewBox', '0 0 24 24');
         cursor_svg.style.cssText = 
-            'filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));' +
-            'transition: all 0.1s ease-out;';
+            'filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.7)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.25));' +
+            'transition: all 0.2s ease-out;';
 
-        // create the triangular cursor path
+        // create the triangular cursor path (more rounded and smoother)
         var cursor_path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        cursor_path.setAttribute('d', 'M5.5 3L20.5 18L12 15.5L9.5 22L5.5 3Z');
+        // More rounded path with smoother curves
+        cursor_path.setAttribute('d', 'M6 2.5L19.5 16L12 14L9.5 20.5L6 2.5Z');
         cursor_path.setAttribute('fill', '#3b82f6');
         cursor_path.setAttribute('stroke', 'white');
-        cursor_path.setAttribute('stroke-width', '1.5');
+        cursor_path.setAttribute('stroke-width', '2');
         cursor_path.setAttribute('stroke-linejoin', 'round');
+        cursor_path.setAttribute('stroke-linecap', 'round');
         
         cursor_svg.appendChild(cursor_path);
 
-        // create label element
-        var label_element = document.createElement('div');
+        // create label element (stored globally for updates)
+        label_element = document.createElement('div');
         label_element.id = 'virtualpointer-label';
         label_element.textContent = 'AI';
         label_element.style.cssText = 
             'background: #3b82f6;' +
             'color: white;' +
-            'padding: 4px 10px;' +
-            'border-radius: 12px;' +
-            'font-size: 12px;' +
+            'padding: 5px 12px;' +
+            'border-radius: 14px;' +
+            'font-size: 13px;' +
             'font-weight: 600;' +
             'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;' +
             'white-space: nowrap;' +
-            'box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);' +
+            'box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.15);' +
             'letter-spacing: 0.3px;' +
-            'margin-top: 2px;';
+            'margin-top: 3px;' +
+            'transition: all 0.2s ease-out;';
 
         // create ripple element for clicks (blue)
         ripple_element = document.createElement('div');
@@ -149,6 +153,13 @@ var virtualpointer = function() {
         ripple_element.style.opacity = '0';
     }
 
+    // update label text
+    function update_label(text) {
+        if (label_element) {
+            label_element.textContent = text || 'AI';
+        }
+    }
+
     // remove visual cursor
     function remove_visual_cursor() {
         // Remove container (which includes cursor and label)
@@ -161,6 +172,8 @@ var virtualpointer = function() {
             ripple_element.parentNode.removeChild(ripple_element);
             ripple_element = null;
         }
+        // Reset label reference
+        label_element = null;
     }
 
     // function to dispatch event inside the browser
@@ -513,6 +526,10 @@ var virtualpointer = function() {
         hide_cursor: function() {
             show_visual_cursor = false;
             remove_visual_cursor();
+        },
+        // update label text
+        updateLabel: function(text) {
+            update_label(text);
         }
     }
 }();

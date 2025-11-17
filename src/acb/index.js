@@ -62,6 +62,10 @@ export class ACBController {
         const session = this.stateManager.createSession(prompt, mode);
 
         try {
+            // Show cursor with "loading..." state
+            this.visualFeedback.showCursor();
+            this.visualFeedback.setStateLoading();
+
             // Discover elements
             const inventory = this.elementDiscovery.scan();
             if (this.config.debug) {
@@ -71,6 +75,9 @@ export class ACBController {
             // Get session and visitor IDs
             const sessionId = this._getSessionId();
             const visitorId = this._getVisitorId();
+
+            // Set "thinking..." state before LLM call
+            this.visualFeedback.setStateThinking();
 
             // Start thread with backend
             const response = await this.llmClient.start({
@@ -231,6 +238,10 @@ export class ACBController {
         // Resume execution loop
         this.stateManager.resume(session);
 
+        // Show cursor and set "thinking..." state
+        this.visualFeedback.showCursor();
+        this.visualFeedback.setStateThinking();
+
         // Get updated inventory
         const inventory = this.elementDiscovery.scan();
 
@@ -314,6 +325,7 @@ export class ACBController {
 
             // Show and execute action
             if (session.mode === 'act') {
+                // showAction() sets "acting..." state
                 await this.visualFeedback.showAction(action);
                 
                 const result = await this.actionExecutor.execute(action);
@@ -326,6 +338,9 @@ export class ACBController {
                     }
                     // Continue anyway - let Claude decide what to do
                 }
+
+                // Set "thinking..." state while waiting for next LLM response
+                this.visualFeedback.setStateThinking();
 
                 // Get next action from Claude
                 const inventory = this.elementDiscovery.scan();
@@ -350,6 +365,9 @@ export class ACBController {
                 // For now, just wait a bit then get next action
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 
+                // Set "thinking..." state while waiting for next LLM response
+                this.visualFeedback.setStateThinking();
+                
                 const inventory = this.elementDiscovery.scan();
                 const response = await this.llmClient.continue({
                     threadId: session.threadId,
@@ -362,7 +380,7 @@ export class ACBController {
             }
         }
 
-        // Hide feedback when done
+        // Hide feedback when done (resets to "AI" state)
         this.visualFeedback.hide();
     }
 
