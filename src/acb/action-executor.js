@@ -308,26 +308,12 @@ export class ActionExecutor {
         element.dispatchEvent(keypressEvent);
         element.dispatchEvent(keyupEvent);
 
-        // If it's Enter on a form field, handle form submission
+        // If it's Enter on a form field, just wait for handlers to execute
+        // Modern frameworks (React, Vue, etc.) handle form submission via event handlers
+        // Don't call form.submit() directly as it bypasses preventDefault and causes page reloads
         if (key === 'Enter' && (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA')) {
-            const form = element.closest('form');
-            if (form) {
-                // First, let any onKeyDown handlers run (React forms often use this)
-                await new Promise(resolve => setTimeout(resolve, 50));
-                
-                // Then try to trigger form submit
-                const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
-                const cancelled = !form.dispatchEvent(submitEvent);
-                
-                // If preventDefault wasn't called, try direct submit
-                if (!cancelled) {
-                    try {
-                        form.submit();
-                    } catch (e) {
-                        // Ignore if submit() fails (form might be handled by JS)
-                    }
-                }
-            }
+            // Give React/framework handlers time to execute
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
 
         // Wait for any DOM changes triggered by the key press
