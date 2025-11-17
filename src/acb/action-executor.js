@@ -49,7 +49,7 @@ export class ActionExecutor {
      * @private
      */
     async _executeClick(action) {
-        const element = this.elementDiscovery.findById(action.targetId);
+        const element = this.elementDiscovery.findElementById(action.targetId);
         
         if (!element) {
             throw new Error(`Element not found: ${action.targetId}`);
@@ -80,7 +80,7 @@ export class ActionExecutor {
      * @private
      */
     async _executeType(action) {
-        const element = this.elementDiscovery.findById(action.targetId);
+        const element = this.elementDiscovery.findElementById(action.targetId);
         
         if (!element) {
             throw new Error(`Element not found: ${action.targetId}`);
@@ -148,7 +148,7 @@ export class ActionExecutor {
     async _executeScroll(action) {
         if (action.targetId) {
             // Scroll to specific element
-            const element = this.elementDiscovery.findById(action.targetId);
+            const element = this.elementDiscovery.findElementById(action.targetId);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 await new Promise(resolve => setTimeout(resolve, 500));
